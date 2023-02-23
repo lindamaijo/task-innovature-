@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+    environment {
+        dockerhub=credentials('dockerhub')
+    }
+    stages {
+        stage('git_checckout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/lindamaijo/task1.git'
+            }
+        }
+        stage('Docker_build') {
+            steps {
+                sh 'sudo docker build -t test .'
+            }
+        }
+        stage('Dockerimages') {
+            steps {
+                sh 'sudo docker images'
+            }
+        }
+        stage('Docker_push') {
+            steps {
+                sh 'sudo docker tag test lindadocker12345/sample_project'
+                sh 'docker login -u $dockerhub_USR -p $dockerhub_PSW'
+                sh 'sudo docker push lindadocker12345/sample_project'
+            }
+        }
+    }
+}
